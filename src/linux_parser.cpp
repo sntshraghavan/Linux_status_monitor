@@ -187,11 +187,11 @@ long LinuxParser::CpuUtilization(int pid) {
       std::istringstream linestream(line);
       linestream >> t0 >> t1 >> t2 >> t3 >> t4 >> t5 >> t6 >> t7 >> t8 >> t9 >> t10 >> t11 >> t12 >> t13 >> t14 >> t15 >> t16 >> t17 >> t18 >> t19 >> t20 >> t21 >> t22;
     }
-    string utime = t14;
-    string stime = t15;
-    string cutime = t16;
-    string cstime = t17;
-    string starttime = t22;
+    string utime = t13;
+    string stime = t14;
+    string cutime = t15;
+    string cstime = t16;
+    string starttime = t21;
     string uptime = t0;
 
     long lutime = stol(utime);
@@ -252,20 +252,20 @@ string LinuxParser::Command(int pid) {
  }
 
 // TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
+// Using VmData (physical RAM) instead of VmSize (virtual memory)
 string LinuxParser::Ram(int pid) { 
   string line;
   string key;
   string value,value1;
+  value1 = "0";
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatusFilename);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
-        if (key == "VmSize:") {
+        if (key == "VmData:") {
           value1 = std::to_string(stol(value)/1024);
         }
-        else value1 = "";
       }
     }
   }
@@ -278,6 +278,7 @@ string LinuxParser::Uid(int pid) {
   string line;
   string key;
   string value,value1;
+  value1 = "0";
   std::ifstream filestream(kProcDirectory + std::to_string(pid) + kStatusFilename);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
@@ -286,11 +287,10 @@ string LinuxParser::Uid(int pid) {
         if (key == "Uid") {
           value1 = value;
         }
-        else value1 = "xxxxx";
       }
     }
   }
-  return "";
+  return value1;
  }
 
 // TODO: Read and return the user associated with a process
@@ -330,7 +330,7 @@ long LinuxParser::UpTime(int pid) {
   }
   
 
-  long uptime = Converttolong(t0)-(Converttolong(t22)/sysconf(_SC_CLK_TCK));
+  long uptime = Converttolong(t0)-(Converttolong(t21)/sysconf(_SC_CLK_TCK));
   return uptime;
  }
 

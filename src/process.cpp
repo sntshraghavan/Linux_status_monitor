@@ -38,7 +38,7 @@ long Process::UpTime() { return LinuxParser::UpTime(pid_); }
 // TODO: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
 bool Process::operator<(Process const& a) const { 
-  if (cpuutil_ < a.cpuutil_)
+  if (cpuutil_ > a.cpuutil_)
     return true;
   else
     return false;
